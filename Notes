@@ -1,0 +1,5 @@
+TESTS
+
+* UNIT (JUnit Mochito) 
+* INSTRUMENTATION (JUnit Mochito)
+* UI (Expresso)
