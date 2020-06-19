@@ -1,5 +1,39 @@
 TESTS
 
-* UNIT (JUnit Mochito) 
-* INSTRUMENTATION (JUnit Mochito)
+* UNIT (JUnit Mockito)
+* INSTRUMENTATION (JUnit Mockito)
 * UI (Expresso)
+
+    --- UNIT ----
+
+        Local Computer -> works on your local computer
+        Java Virtual Machine -> work on JVM
+        Very fast
+        JUnit5, Mockito
+
+    --- INSTRUMENTATION ----
+
+        Similar to local unit test
+        Need a real device or emulator
+        JUnit4, Mockito
+
+    ---- UI TESTING ----
+
+        Simulate a person using your app
+        Literally uses widgets
+        Real device or emulator
+        Expresso
+
+
+    For android View
+    * Src
+      * androidTest ( Instrumentation & UI )
+        Mockito,JUnit,Expresso
+      * test ( Unit )
+        Mockito,JUnit
+    
+
+
+
+
+
