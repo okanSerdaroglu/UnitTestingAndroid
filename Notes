@@ -32,6 +32,10 @@ TESTS
       * test ( Unit )
         Mockito,JUnit
 
+** Shared directories for unit and instrumentation test.
+   Create test-common directory and create the same named packages for creating
+   shared data between unit and instrumentation test packages
+
 
 
 

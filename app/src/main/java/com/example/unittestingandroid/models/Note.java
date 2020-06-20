@@ -99,6 +99,14 @@ public class Note implements Parcelable {
         this.timeStamp = timeStamp;
     }
 
+
+    public Note(int id, @NonNull String title, String content, String timeStamp) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.timeStamp = timeStamp;
+    }
+
     @Ignore
     public Note() {
     }
