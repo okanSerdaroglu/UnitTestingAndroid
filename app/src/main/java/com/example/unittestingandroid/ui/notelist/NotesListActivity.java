@@ -1,9 +1,10 @@
-package com.example.unittestingandroid;
+package com.example.unittestingandroid.ui.notelist;
 
 
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.unittestingandroid.R;
 import com.example.unittestingandroid.repository.NoteRepository;
 
 import javax.inject.Inject;
