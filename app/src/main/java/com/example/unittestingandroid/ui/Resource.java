@@ -35,7 +35,7 @@ public class Resource<T> {
     public enum Status {SUCCESS, ERROR, LOADING}
 
     @Override  // for unit testing
-    public boolean equals(Object obj) { 
+    public boolean equals(Object obj) {
         if (obj.getClass() != getClass() || obj.getClass() != Resource.class) {
             return false;
         }
