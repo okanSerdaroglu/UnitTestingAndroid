@@ -48,5 +48,6 @@ TESTS
     Some examples of common expensive operations are the creation of a database connection
     or the startup of a server.
 
-
+    You have to use blockingGet when you are using single, when you are using
+    flowable you have to use blockingFirst.
 
