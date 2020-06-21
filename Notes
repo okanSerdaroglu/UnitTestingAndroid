@@ -37,7 +37,16 @@ TESTS
    shared data between unit and instrumentation test packages
 
 
+   -- Before  ( Before Each ) --
+    Methods annotated with the @Before annotation are executed before each test.
+    This is useful when we want to execute some common code before running a test.
+    It is name as Before in JUnit5, in JUnit4 it is called BeforeEach
 
+    -- Before Class --
+    When we want to execute an expensive common operation before each test,
+    it's preferable to execute it only once before running all tests using @BeforeClass.
+    Some examples of common expensive operations are the creation of a database connection
+    or the startup of a server.
 
 
 
