@@ -10,12 +10,14 @@ import static org.mockito.Mockito.when;
 import com.example.unittestingandroid.models.Note;
 import com.example.unittestingandroid.repository.NoteRepository;
 import com.example.unittestingandroid.ui.Resource;
+import com.example.unittestingandroid.util.InstantExecutorExtension;
 import com.example.unittestingandroid.util.LiveDataTestUtil;
 import com.example.unittestingandroid.util.TestUtil;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -23,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 import io.reactivex.Flowable;
 import io.reactivex.internal.operators.single.SingleToFlowable;
 
+@ExtendWith(InstantExecutorExtension.class)
 public class NoteViewModelTest {
 
     // system under test

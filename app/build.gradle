@@ -30,11 +30,6 @@ android {
 
 }
 
-sourceSets {
-    androidTest.java.srcDirs += "src/test-common/java"
-    test.java.srcDirs += "src/test-common/java"
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -97,16 +92,10 @@ dependencies {
     implementation "android.arch.lifecycle:reactivestreams:$reactivestreams_version"
 
     // RxJava
-    def rxjava_version = '2.1.1'
+    def rxjava_version = '2.2.9'
     implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
 
     // RxAndroid
     def rxandroid_version = '2.1.1'
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
-
-    // Rx-Retrofit Call Adapter
-    def rxcalladapter_version = '2.5.0'
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$rxcalladapter_version"
-    // Retrofit call adapter
-
 }
