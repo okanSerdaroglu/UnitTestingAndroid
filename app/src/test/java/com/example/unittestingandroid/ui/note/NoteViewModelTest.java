@@ -1,11 +1,27 @@
 package com.example.unittestingandroid.ui.note;
 
-import com.example.unittestingandroid.repository.NoteRepository;
+import static com.example.unittestingandroid.repository.NoteRepository.INSERT_SUCCESS;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.example.unittestingandroid.models.Note;
+import com.example.unittestingandroid.repository.NoteRepository;
+import com.example.unittestingandroid.ui.Resource;
+import com.example.unittestingandroid.util.LiveDataTestUtil;
+import com.example.unittestingandroid.util.TestUtil;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import io.reactivex.Flowable;
+import io.reactivex.internal.operators.single.SingleToFlowable;
 
 public class NoteViewModelTest {
 
@@ -28,11 +44,13 @@ public class NoteViewModelTest {
     @Test
     void observeEmptyNote_whenNoteSet() throws Exception {
         // Arrange
+        LiveDataTestUtil<Note> liveDataTestUtil = new LiveDataTestUtil<>();
 
         // Act
+        Note note = liveDataTestUtil.getValue(noteViewModel.observeNote());
 
         // Assert
-
+        assertNull(note);
     }
 
 
@@ -43,11 +61,15 @@ public class NoteViewModelTest {
     @Test
     void observeNote_whenSet() throws Exception {
         // Arrange
+        Note note = new Note(TestUtil.TEST_NOTE_1);
+        LiveDataTestUtil<Note> liveDataTestUtil = new LiveDataTestUtil<>();
 
         // Act
+        noteViewModel.setNote(note);
+        Note observedNote = liveDataTestUtil.getValue(noteViewModel.observeNote());
 
         // Assert
-
+        assertEquals(note, observedNote);
     }
 
 
@@ -56,11 +78,22 @@ public class NoteViewModelTest {
      */
     @Test
     void insertNote_returnRow() throws Exception {
+
         // Arrange
+        Note note = new Note(TestUtil.TEST_NOTE_1);
+        LiveDataTestUtil<Resource<Integer>> liveDataTestUtil = new LiveDataTestUtil<>();
+        final int insertedRow = 1;
+        Flowable<Resource<Integer>> returnedData
+                = SingleToFlowable.just(Resource.success(insertedRow, INSERT_SUCCESS));
+        when(noteRepository.insertNote(any(Note.class))).thenReturn(returnedData);
 
         // Act
+        noteViewModel.setNote(note);
+        Resource<Integer> returnedValue
+                = liveDataTestUtil.getValue(noteViewModel.insertNote());
 
         // Assert
+        Assertions.assertEquals(Resource.success(insertedRow, INSERT_SUCCESS), returnedValue);
 
     }
 
@@ -69,11 +102,15 @@ public class NoteViewModelTest {
      */
     @Test
     void doNotReturnInsertRow_withoutObserver() throws Exception {
+
         // Arrange
+        Note note = new Note(TestUtil.TEST_NOTE_1);
 
         // Act
+        noteViewModel.setNote(note);
 
         // Assert
+        verify(noteRepository, never()).insertNote(any(Note.class));
 
     }
 
@@ -82,11 +119,20 @@ public class NoteViewModelTest {
      */
     @Test
     void setNote_nullTitle_throwException() throws Exception {
-        // Arrange
 
-        // Act
+        // Arrange
+        final Note note = new Note(TestUtil.TEST_NOTE_1);
+        note.setTitle(null);
 
         // Assert
+        assertThrows(Exception.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
 
+                // Act
+                noteViewModel.setNote(note);
+
+            }
+        });
     }
 }
