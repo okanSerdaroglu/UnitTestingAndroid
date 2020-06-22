@@ -12,13 +12,16 @@ import com.example.unittestingandroid.repository.NoteRepository;
 import com.example.unittestingandroid.ui.Resource;
 import com.example.unittestingandroid.util.DateUtil;
 
+import org.reactivestreams.Subscription;
+
 import javax.inject.Inject;
+
+import io.reactivex.functions.Consumer;
 
 public class NoteViewModel extends ViewModel {
 
     private static final String TAG = "NoteViewModel";
-
-
+    public static final String NO_CONTENT_ERROR = "Can't save note no content";
 
     public enum ViewState {VIEW, EDIT}
 
@@ -28,6 +31,8 @@ public class NoteViewModel extends ViewModel {
     private MutableLiveData<Note> note = new MutableLiveData<>();
     private MutableLiveData<ViewState> viewState = new MutableLiveData<>();
     private boolean isNewNote;
+    private Subscription updateSubscription;
+    private Subscription insertSubscription;
 
     @Inject
     public NoteViewModel(NoteRepository noteRepository) {
@@ -37,6 +42,12 @@ public class NoteViewModel extends ViewModel {
     public LiveData<Resource<Integer>> insertNote() throws Exception {
         return LiveDataReactiveStreams.fromPublisher(  // converts flowable to live data
                 noteRepository.insertNote(note.getValue())
+                        .doOnSubscribe(new Consumer<Subscription>() {
+                            @Override
+                            public void accept(Subscription subscription) throws Exception {
+                                insertSubscription = subscription;
+                            }
+                        })
         );
     }
 
@@ -56,16 +67,58 @@ public class NoteViewModel extends ViewModel {
         this.isNewNote = isNewNote;
     }
 
-    public LiveData<Resource<Integer>> saveNote() {
+    public LiveData<Resource<Integer>> saveNote() throws Exception {
+
+        if (!shouldAllowSave()) {
+            throw new Exception(NO_CONTENT_ERROR);
+        }
+        cancelInsertTransaction();
+
         return null;
     }
 
-    public void updateNote(String title, String content) throws Exception{
-        if(title == null || title.equals("")){
+    private boolean shouldAllowSave() {
+        return removeWhiteSpace(note.getValue().getContent()).length() > 0;
+    }
+
+    private void cancelPendingTransactions() {
+        if (insertSubscription != null) {
+            cancelInsertTransaction();
+        }
+
+        if (updateSubscription != null) {
+            cancelUpdateTransaction();
+        }
+    }
+
+    private void cancelUpdateTransaction() {
+        updateSubscription.cancel();
+        updateSubscription = null;
+    }
+
+    private void cancelInsertTransaction() {
+        insertSubscription.cancel();
+        insertSubscription = null;
+    }
+
+    public LiveData<Resource<Integer>> updateNote() throws Exception {
+        return LiveDataReactiveStreams.fromPublisher(
+                noteRepository.updateNote(note.getValue())
+                        .doOnSubscribe(new Consumer<Subscription>() {
+                            @Override
+                            public void accept(Subscription subscription) throws Exception {
+                                updateSubscription = subscription;
+                            }
+                        })
+        );
+    }
+
+    public void updateNote(String title, String content) throws Exception {
+        if (title == null || title.equals("")) {
             throw new NullPointerException("Title can't be null");
         }
         String temp = removeWhiteSpace(content);
-        if(temp.length() > 0){
+        if (temp.length() > 0) {
             Note updatedNote = new Note(note.getValue());
             updatedNote.setTitle(title);
             updatedNote.setContent(content);
@@ -75,7 +128,7 @@ public class NoteViewModel extends ViewModel {
         }
     }
 
-    private String removeWhiteSpace(String string){
+    private String removeWhiteSpace(String string) {
         string = string.replace("\n", "");
         string = string.replace(" ", "");
         return string;
@@ -90,11 +143,10 @@ public class NoteViewModel extends ViewModel {
         this.note.setValue(note);
     }
 
-    public boolean shouldNavigateBack(){
-        if(viewState.getValue() == ViewState.VIEW){
+    public boolean shouldNavigateBack() {
+        if (viewState.getValue() == ViewState.VIEW) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
