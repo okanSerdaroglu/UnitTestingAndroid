@@ -3,6 +3,8 @@ package com.example.unittestingandroid.repository;
 import static com.example.unittestingandroid.repository.NoteRepository.INSERT_FAILURE;
 import static com.example.unittestingandroid.repository.NoteRepository.INSERT_SUCCESS;
 import static com.example.unittestingandroid.repository.NoteRepository.NOTE_TITLE_NULL;
+import static com.example.unittestingandroid.repository.NoteRepository.UPDATE_FAILURE;
+import static com.example.unittestingandroid.repository.NoteRepository.UPDATE_SUCCESS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -124,9 +126,100 @@ public class NoteRepositoryTest {
             }
         });
 
-        assertEquals(NOTE_TITLE_NULL,exception.getMessage());
+        assertEquals(NOTE_TITLE_NULL, exception.getMessage());
 
     }
 
+    /**
+     * update test methods
+     */
+
+
+    /**
+     * update note
+     * <p>
+     * verify the correct method is called
+     * <p>
+     * confirm observer is trigger
+     * <p>
+     * confirm number of rows updated
+     */
+    @Test
+    void updateNote_returnNumRowsUpdated() throws Exception {
+
+        // Arrange
+        final int updatedRow = 1;
+        when(noteDao.updateNote(any(Note.class))).thenReturn(Single.just(updatedRow));
+        /** when you call noteRepository.updateNote method thenReturn 1 */
+
+        // Act
+        final Resource<Integer> returnedValue
+                = noteRepository.updateNote(NOTE1).blockingFirst();
+        /** call noteRepository.updateNote method */
+
+        // Assert
+        verify(noteDao).updateNote(any(Note.class));
+        verifyNoMoreInteractions(noteDao);
+        /** check if noteDao.updateNote method is called ?
+         *  check if there is no more interactions in noteDao
+         */
+
+        assertEquals(Resource.success(updatedRow, UPDATE_SUCCESS), returnedValue);
+        /** control the returned value is equal success value */
+
+    }
+
+
+    /**
+     * update note
+     * <p>
+     * Failure (-1)
+     */
+    @Test
+    void updateNote_returnFailure() throws Exception {
+
+        // Arrange
+        final int failedInsert = -1;
+        final Single<Integer> returnedData = Single.just(failedInsert);
+        when(noteDao.updateNote(any(Note.class))).thenReturn(returnedData);
+
+        // Act
+        final Resource<Integer> returnedValue
+                = noteRepository.updateNote(NOTE1).blockingFirst();
+        /** call noteRepository.updateNote method */
+
+        // Assert
+        verify(noteDao).updateNote(any(Note.class));
+        verifyNoMoreInteractions(noteDao);
+        /** check if noteDao.updateNote method is called ?
+         *  check if there is no more interactions in noteDao
+         */
+
+        assertEquals(Resource.error(null, UPDATE_FAILURE), returnedValue);
+        /** control the returned value is equal failure value */
+
+    }
+
+
+    /**
+     * update note
+     * null title
+     * throw exception
+     */
+    @Test
+    void updateNote_nullTitle_throw_Exception() throws Exception {
+
+        Exception exception = assertThrows(Exception.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                final Note note = new Note(TestUtil.TEST_NOTE_1);
+                note.setTitle(null);
+                noteRepository.updateNote(note);
+            }
+        });
+
+        assertEquals(NOTE_TITLE_NULL, exception.getMessage());
+
+    }
 
 }

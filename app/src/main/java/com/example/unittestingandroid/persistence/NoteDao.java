@@ -23,7 +23,7 @@ public interface NoteDao {
     LiveData<List<Note>> getNotes();
 
     @Delete
-    Single<Integer>deleteNote(Note note);
+    Single<Integer> deleteNote(Note note);
 
     @Update
     Single<Integer> updateNote(Note note) throws Exception;
