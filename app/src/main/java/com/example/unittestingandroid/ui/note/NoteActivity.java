@@ -2,6 +2,7 @@ package com.example.unittestingandroid.ui.note;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
@@ -68,7 +69,7 @@ public class NoteActivity extends DaggerAppCompatActivity implements
         backArrowContrainer = findViewById(R.id.back_arrow_container);
         parent = findViewById(R.id.parent);
 
-        viewModel = ViewModelProviders.of(this, providerFactory).get(NoteViewModel.class);
+        viewModel = new ViewModelProvider(this, providerFactory).get(NoteViewModel.class);
 
         subscribeObservers();
         setListeners();
