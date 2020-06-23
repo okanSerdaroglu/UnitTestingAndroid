@@ -72,7 +72,7 @@ public class NoteViewModel extends ViewModel {
         if (!shouldAllowSave()) {
             throw new Exception(NO_CONTENT_ERROR);
         }
-        cancelInsertTransaction();
+        cancelPendingTransactions();
 
         return new NoteInsertUpdateHelper<Integer>() {
             @Override
@@ -109,8 +109,13 @@ public class NoteViewModel extends ViewModel {
         }.getAsLiveData();
     }
 
-    private boolean shouldAllowSave() {
-        return removeWhiteSpace(note.getValue().getContent()).length() > 0;
+    private boolean shouldAllowSave() throws Exception {
+        try {
+            return removeWhiteSpace(note.getValue().getContent()).length() > 0;
+        } catch (NullPointerException e) {
+            throw new Exception(NO_CONTENT_ERROR);
+        }
+
     }
 
     private void cancelPendingTransactions() {

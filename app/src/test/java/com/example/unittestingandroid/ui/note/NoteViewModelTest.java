@@ -2,6 +2,7 @@ package com.example.unittestingandroid.ui.note;
 
 import static com.example.unittestingandroid.repository.NoteRepository.INSERT_SUCCESS;
 import static com.example.unittestingandroid.repository.NoteRepository.UPDATE_SUCCESS;
+import static com.example.unittestingandroid.ui.note.NoteViewModel.NO_CONTENT_ERROR;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -92,8 +93,9 @@ public class NoteViewModelTest {
 
         // Act
         noteViewModel.setNote(note);
+        noteViewModel.setIsNewNote(true); // insert method triggered
         Resource<Integer> returnedValue
-                = liveDataTestUtil.getValue(noteViewModel.insertNote());
+                = liveDataTestUtil.getValue(noteViewModel.saveNote());
 
         // Assert
         assertEquals(Resource.success(insertedRow, INSERT_SUCCESS), returnedValue);
@@ -156,8 +158,9 @@ public class NoteViewModelTest {
 
         // Act
         noteViewModel.setNote(note);
+        noteViewModel.setIsNewNote(false); // update method triggered
         Resource<Integer> returnedValue
-                = liveDataTestUtil.getValue(noteViewModel.updateNote());
+                = liveDataTestUtil.getValue(noteViewModel.saveNote());
 
         // Assert
         assertEquals(Resource.success(updatedRow, UPDATE_SUCCESS), returnedValue);
@@ -182,4 +185,25 @@ public class NoteViewModelTest {
 
     }
 
+    @Test
+    void saveNote_shouldAllowSave_returnFalse() throws Exception {
+        // Arrange
+        Note note = new Note(TestUtil.TEST_NOTE_1);
+        note.setContent(null);
+
+        // Act
+        noteViewModel.setNote(note);
+        noteViewModel.setIsNewNote(true);
+
+        // Assert
+        Exception exception = assertThrows(Exception.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                noteViewModel.saveNote(); // saveNote method should throw an exception
+            }
+        });
+
+        assertEquals(NO_CONTENT_ERROR, exception.getMessage());
+
+    }
 }
