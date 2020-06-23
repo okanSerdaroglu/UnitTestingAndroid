@@ -1,6 +1,7 @@
 package com.example.unittestingandroid.ui.note;
 
 import static com.example.unittestingandroid.repository.NoteRepository.INSERT_SUCCESS;
+import static com.example.unittestingandroid.repository.NoteRepository.UPDATE_SUCCESS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -14,7 +15,6 @@ import com.example.unittestingandroid.util.InstantExecutorExtension;
 import com.example.unittestingandroid.util.LiveDataTestUtil;
 import com.example.unittestingandroid.util.TestUtil;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -96,7 +96,7 @@ public class NoteViewModelTest {
                 = liveDataTestUtil.getValue(noteViewModel.insertNote());
 
         // Assert
-        Assertions.assertEquals(Resource.success(insertedRow, INSERT_SUCCESS), returnedValue);
+        assertEquals(Resource.success(insertedRow, INSERT_SUCCESS), returnedValue);
 
     }
 
@@ -138,4 +138,48 @@ public class NoteViewModelTest {
             }
         });
     }
+
+
+    /**
+     * update a  note and observe row returned
+     */
+    @Test
+    void updateNote_returnRow() throws Exception {
+
+        // Arrange
+        Note note = new Note(TestUtil.TEST_NOTE_1);
+        LiveDataTestUtil<Resource<Integer>> liveDataTestUtil = new LiveDataTestUtil<>();
+        final int updatedRow = 1;
+        Flowable<Resource<Integer>> returnedData
+                = SingleToFlowable.just(Resource.success(updatedRow, UPDATE_SUCCESS));
+        when(noteRepository.updateNote(any(Note.class))).thenReturn(returnedData);
+
+        // Act
+        noteViewModel.setNote(note);
+        Resource<Integer> returnedValue
+                = liveDataTestUtil.getValue(noteViewModel.updateNote());
+
+        // Assert
+        assertEquals(Resource.success(updatedRow, UPDATE_SUCCESS), returnedValue);
+
+    }
+
+
+    /**
+     * update: don't return a new row without observer
+     */
+    @Test
+    void doNotReturnUpdateRow_withoutObserver() throws Exception {
+
+        // Arrange
+        Note note = new Note(TestUtil.TEST_NOTE_1);
+
+        // Act
+        noteViewModel.setNote(note);
+
+        // Assert
+        verify(noteRepository, never()).updateNote(any(Note.class));
+
+    }
+
 }
