@@ -1,11 +1,14 @@
 package com.example.unittestingandroid.repository;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
 
 import com.example.unittestingandroid.models.Note;
 import com.example.unittestingandroid.persistence.NoteDao;
 import com.example.unittestingandroid.ui.Resource;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -96,6 +99,41 @@ public class NoteRepository {
     private void checkTitle(Note note) throws Exception {
         if (note.getTitle() == null) {
             throw new Exception(NOTE_TITLE_NULL);
+        }
+    }
+
+    public LiveData<Resource<Integer>> deleteNote(final Note note) throws Exception {
+
+        checkID(note);
+
+        return LiveDataReactiveStreams.fromPublisher(
+                noteDao.deleteNote(note)
+                        .onErrorReturn(new Function<Throwable, Integer>() {
+                            @Override
+                            public Integer apply(Throwable throwable) throws Exception {
+                                return -1;
+                            }
+                        })
+                        .map(new Function<Integer, Resource<Integer>>() {
+                            @Override
+                            public Resource<Integer> apply(Integer integer) throws Exception {
+                                if (integer > 0) {
+                                    return Resource.success(integer, DELETE_SUCCESS);
+                                }
+                                return Resource.error(null, DELETE_FAILURE);
+                            }
+                        }).subscribeOn(Schedulers.io())
+                        .toFlowable()
+        );
+    }
+
+    public LiveData<List<Note>> getNotes(){
+        return noteDao.getNotes();
+    }
+
+    private void checkID(Note note) throws Exception {
+        if (note.getId() < 0) {
+            throw new Exception(INVALID_NOTE_ID);
         }
     }
 
