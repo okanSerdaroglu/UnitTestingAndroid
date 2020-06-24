@@ -64,21 +64,14 @@ public class NoteRepositoryTest {
      * }
      **/
 
+
     /**
-     *  --- Cases ---
+     * --- Cases ---
      * insert note
      * verify the correct method is called
      * confirm observer is triggered
      * confirm new rows inserted
      */
-
-    /**
-     * --- Cases ---
-     * insert a note
-     * insert note with null title
-     * confirm throw exception
-     */
-
     @Test
     void insertNote_returnRows() throws Exception {
 
@@ -93,8 +86,8 @@ public class NoteRepositoryTest {
 
 
         // Assert
-        verify(noteDao).insertNote(any(Note.class));
-        verifyNoMoreInteractions(noteDao);
+        verify(noteDao).insertNote(any(Note.class)); // is insertNoteMethod called ?
+        verifyNoMoreInteractions(noteDao); // is any other methods called ?
 
         System.out.println("Returned value : " + returnedValue.data);
         assertEquals(Resource.success(1, INSERT_SUCCESS), returnedValue);
@@ -108,6 +101,13 @@ public class NoteRepositoryTest {
 
     }
 
+
+    /**
+     * --- Cases ---
+     * insert a note
+     * insert note with null title
+     * confirm throw exception
+     */
     @Test
     void insertNote_returnFailure() throws Exception {
         // Arrange
@@ -120,8 +120,8 @@ public class NoteRepositoryTest {
                 noteRepository.insertNote(NOTE1).blockingFirst();
 
         // Assert
-        verify(noteDao).insertNote(any(Note.class));
-        verifyNoMoreInteractions(noteDao);
+        verify(noteDao).insertNote(any(Note.class)); // is insertNoteMethod called ?
+        verifyNoMoreInteractions(noteDao); // is any other methods called ?
 
         assertEquals(Resource.error(null, INSERT_FAILURE), returnedValue);
     }
@@ -129,6 +129,7 @@ public class NoteRepositoryTest {
     @Test
     void insertNote_nullTitle_throwException() throws Exception {
 
+        // assertThrows return an exception
         Exception exception = assertThrows(Exception.class, new Executable() {
             @Override
             public void execute() throws Throwable {
